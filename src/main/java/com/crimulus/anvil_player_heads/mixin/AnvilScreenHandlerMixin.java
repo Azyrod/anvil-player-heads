@@ -22,6 +22,8 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(at = @At("HEAD"), method = "updateResult", cancellable = true)
     private void init(CallbackInfo info) {
-        if (AnvilPlayerHeads.applyRenaming(this.player, this.slots, this.newItemName)) info.cancel();
+        if (AnvilPlayerHeads.applyRenaming(this.player, this.slots, this.newItemName)) {
+            info.cancel();
+        }
     }
 }
