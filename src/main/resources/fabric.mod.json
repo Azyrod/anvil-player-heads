@@ -24,7 +24,7 @@
 		"anvil-player-heads.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.124",
+		"fabricloader": ">=0.16.14",
 		"minecraft": ">=1.21.6",
 		"java": ">=21",
 		"fabric-api": "*"

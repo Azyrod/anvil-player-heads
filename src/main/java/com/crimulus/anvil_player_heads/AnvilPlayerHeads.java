@@ -64,7 +64,7 @@ public class AnvilPlayerHeads implements ModInitializer {
 
     static Optional<String> fetch_player_profile(final ServerPlayerEntity serverPlayer, final AnvilScreenHandler anvilHandler, final String newItemName) {
         try {
-            Thread.sleep(200); // Don't call the API at every keystroke. Wait a tiny bit and check if the Player stopped typing
+            Thread.sleep(500); // Don't call the API at every keystroke. Wait a tiny bit and check if the Player stopped typing
         } catch (InterruptedException e) {
             // Interrupted
         }
@@ -81,25 +81,21 @@ public class AnvilPlayerHeads implements ModInitializer {
                 return;
             }
             ItemStack current_item = anvilHandler.slots.getFirst().getStack();
-            ProfileComponent previous_value = current_item.get(DataComponentTypes.PROFILE);
-            GameProfile previous_profile = previous_value != null ? previous_value.gameProfile() : null;
+            ProfileComponent previous_profile_component = current_item.getItem().getComponents().get(DataComponentTypes.PROFILE);
+            GameProfile previous_profile = previous_profile_component != null ? previous_profile_component.gameProfile() : null;
             Text custom_name = current_item.getCustomName();
-            // Begin by keeping the previous item attributes
-            String new_name = custom_name != null ? custom_name.getString() : null;
-            GameProfile new_profile = previous_profile;
+            String custom_name_to_assign = custom_name != null ? custom_name.getString() : null;
+            GameProfile profile_to_assign = previous_profile;
 
+            custom_name_to_assign = newItemName; // Profile does not exists, just perform rename
+
+            // Text entered links to a valid profile
             if (profile.isPresent() && !profile.get().getProperties().isEmpty()) {
-                // If user inputted a valid profile name, then use it.
-                new_profile = profile.get();
-
-                if (previous_value != null && previous_value.gameProfile().getId() != new_profile.getId()) {
-                    new_name = null; // reset custom name if Profile Changed
-                }
-            } else {
-                new_name = newItemName; // Profile does not exists, just perform rename
+                profile_to_assign = profile.get();
+                custom_name_to_assign = null; // We don't want the head renamed if there is a new profile assigned to it
             }
 
-            perform_rename(serverPlayer, anvilHandler, new_name, new_profile);
+            perform_rename(serverPlayer, anvilHandler, custom_name_to_assign, profile_to_assign);
         }, SkullBlockEntity.EXECUTOR);
         return Optional.empty();
     }
@@ -109,7 +105,7 @@ public class AnvilPlayerHeads implements ModInitializer {
     }
 
     static void perform_rename(@NotNull ServerPlayerEntity serverPlayer, AnvilScreenHandler anvilHandler, String new_name, GameProfile new_profile) {
-        serverPlayer.server.executeSync(() -> {
+        serverPlayer.getServer().executeSync(() -> {
             ((AnvilScreenHandlerAccessor) anvilHandler).aph$getLevelCost().set(1);
             ItemStack newItem = anvilHandler.slots.getFirst().getStack().copy();
 
