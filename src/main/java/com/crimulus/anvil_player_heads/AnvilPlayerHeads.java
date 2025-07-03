@@ -84,7 +84,7 @@ public class AnvilPlayerHeads implements ModInitializer {
             ProfileComponent previous_profile_component = current_item.getItem().getComponents().get(DataComponentTypes.PROFILE);
             GameProfile previous_profile = previous_profile_component != null ? previous_profile_component.gameProfile() : null;
             Text custom_name = current_item.getCustomName();
-            String custom_name_to_assign = custom_name != null ? custom_name.getString() : null;
+            String custom_name_to_assign = custom_name ? custom_name.getString() : null;
             GameProfile profile_to_assign = previous_profile;
 
             custom_name_to_assign = newItemName; // Profile does not exists, just perform rename
